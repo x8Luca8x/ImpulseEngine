@@ -2,7 +2,7 @@
 
 #include "Misc/RefCounter.h"
 
-#include "Select.h"
+#include "ImpulseTemplates.h"
 
 template<typename ObjectType, ESPMode Mode>
 class TSharedPtr;
@@ -13,12 +13,15 @@ class TSharedFromThis;
 
 namespace SharedPointer
 {
-	template<typename ObjectType, ESPMode Mode, typename = Tor>
-	constexpr void EnableSharedFromThis(TSharedPtr<ObjectType, Mode>* InSharedPtr, ObjectType* InObject, TSharedFromThis<ObjectType, Mode>* InShareable)
+	template<typename ObjectType, ESPMode Mode>
+	constexpr void EnableSharedFromThis(TSharedPtr<ObjectType, Mode>* InSharedPtr, ObjectType const * InObject, TSharedFromThis<ObjectType, Mode> const * InShareable)
 	{
 		if (InShareable)
 			InShareable->UpdateWeakReference(InSharedPtr);
 	}
+
+	/** Templated helper catch-all function, accomplice to the above helper functions */
+	constexpr void EnableSharedFromThis(...) { }
 }
 
 template<typename ObjectType, ESPMode Mode = PLATFORM_DEFAULT_SMART_POINTER_CLASS>
@@ -33,12 +36,12 @@ public:
 
 	TSharedPtr() = default;
 
-	template<typename OtherType, typename = std::enable_if_t<std::is_convertible<OtherType*, ObjectType*>::value>>
+	template<typename OtherType, typename = decltype(ImplicitConv<ObjectType*>((OtherType*)nullptr))>
 	TSharedPtr(OtherType* InObject)
 		: Object(InObject)
 	{
 		AddRef();
-		SharedPointer::EnableSharedFromThis(this, InObject, InObject);
+		SharedPointer::EnableSharedFromThis(this, Object, Object);
 	}
 
 	TSharedPtr(const TSharedPtr& Other)
@@ -57,7 +60,7 @@ public:
 		SharedPointer::EnableSharedFromThis(this, Object, Object);
 	}
 
-	template<typename OtherType, typename = std::enable_if_t<std::is_convertible<OtherType*, ObjectType*>::value>>
+	template<typename OtherType, typename = decltype(ImplicitConv<ObjectType*>((OtherType*)nullptr))>
 	TSharedPtr(const TSharedPtr<OtherType, Mode>& Other)
 		: Object(Other.Get()), RefCounter(Other.GetRefCounter())
 	{
@@ -193,13 +196,13 @@ public:
 	* Get the object this smart pointer is referencing.
 	* @return The object this smart pointer is referencing.
 	*/
-	ObjectType* Get() { return Object; }
+	ObjectType* Get() const { return Object; }
 
 	/**
 	* Get the object this smart pointer is referencing.
 	* @return The object this smart pointer is referencing.
 	*/
-	const ObjectType* Get() const { return Object; }
+	// const ObjectType* Get() const { return Object; }
 
 	/**
 	* Get the reference counter for this smart pointer.
@@ -289,6 +292,17 @@ public:
 			RefCounter->AddWeakRef();
 	}
 
+	TWeakPtr(TYPE_OF_NULLPTR)
+		: Object(nullptr) {}
+
+	template<typename OtherType, typename = decltype(ImplicitConv<ObjectType*>((OtherType*)nullptr))>
+	TWeakPtr(const TWeakPtr<OtherType, Mode>& InWeakPtr)
+		: Object(InWeakPtr.Get()), RefCounter(InWeakPtr.GetRefCounter())
+	{
+		if (RefCounter)
+			RefCounter->AddWeakRef();
+	}
+
 	~TWeakPtr()
 	{
 		if (RefCounter)
@@ -340,6 +354,30 @@ public:
 		return *this;
 	}
 
+	TWeakPtr& operator=(TYPE_OF_NULLPTR)
+	{
+		Release();
+		Object = nullptr;
+		RefCounter = nullptr;
+
+		return *this;
+	}
+
+	/*template<typename OtherType, typename = decltype(ImplicitConv<ObjectType*>((OtherType*)nullptr))>
+	TWeakPtr& operator=(const TWeakPtr<OtherType, Mode>& InWeakPtr)
+	{
+		static_assert(std::is_convertible<OtherType*, ObjectType*>::value, "Incompatible types");
+		Release();
+
+		Object = InWeakPtr.Object;
+		RefCounter = InWeakPtr.RefCounter;
+
+		if (RefCounter)
+			RefCounter->AddWeakRef();
+
+		return *this;
+	}*/
+
 public:
 
 	TSharedPtr<ObjectType, Mode> Pin() const
@@ -350,6 +388,9 @@ public:
 public:
 
 	inline bool IsValid() const { return RefCounter && RefCounter->GetRefCount() > 0; }
+
+	inline ObjectType* Get() const { return IsValid() ? Object : nullptr; }
+	inline IRefCounterBase* GetRefCounter() const { return RefCounter; }
 
 public:
 
@@ -401,9 +442,9 @@ public:
 		return result;
 	}
 
-	inline TSharedPtr<const ObjectType, Mode> AsShared() const
+	inline TSharedPtr<ObjectType, Mode> AsShared() const
 	{
-		TSharedPtr<const ObjectType, Mode> result = WeakThis.Pin();
+		TSharedPtr<ObjectType, Mode> result = WeakThis.Pin();
 		// check(result.Get() == this);
 
 		return result;

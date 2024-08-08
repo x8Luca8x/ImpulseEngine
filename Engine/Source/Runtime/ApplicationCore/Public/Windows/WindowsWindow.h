@@ -20,10 +20,6 @@ class APPCORE_API FWindowsWindow : public IGenericWindow
 {
 public:
 
-	bool bIsMovingWindow = false;
-
-public:
-
 	/** Default class for impulse windows */
 	static const TCHAR* WindowClassName;
 
@@ -76,12 +72,12 @@ private:
 
 inline FWindowPtr MakeWindow()
 {
-	return new FWindowsWindow();
+	return MakeShared<FWindowsWindow, ESPMode::ThreadSafe>();
 }
 
 inline FWindowDefinitionPtr MakeWindowDefinition()
 {
-	return new FWindowsWindowDefinition();
+	return MakeShared<FWindowsWindowDefinition, ESPMode::NotThreadSafe>();
 }
 
 typedef FWindowsWindow FWindow;

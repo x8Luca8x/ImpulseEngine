@@ -162,3 +162,18 @@ void DestructItems(T* Ptr, int32 Count)
 	for (int32 i = 0; i < Count; ++i)
 		(Ptr + i)->~T();
 }
+
+/**
+ * Uses implicit conversion to create an instance of a specific type.
+ * Useful to make things clearer or circumvent unintended type deduction in templates.
+ * Safer than C casts and static_casts, e.g. does not allow down-casts
+ *
+ * @param Obj  The object (usually pointer or reference) to convert.
+ *
+ * @return The object converted to the specified type.
+ */
+template <typename T>
+FORCEINLINE T ImplicitConv(typename TIdentity<T>::Type Obj)
+{
+	return Obj;
+}

@@ -17,13 +17,10 @@ public:
 	virtual void Run() override
 	{
 		FWindowPtr window = MakeWindow();
-		FWindowBase* windowBase = window.Get();
-
-		checkf(window == windowBase->AsShared(), TEXT("Window is not the same as the weak pointer"));
-
 		FWindowDefinitionPtr windowDefinition = MakeWindowDefinition();
 
 		windowDefinition->bIsRegularWindow = true;
+		windowDefinition->bHasOSWindowBorder = true;
 		windowDefinition->XDesiredPosition = 25;
 		windowDefinition->YDesiredPosition = 25;
 		windowDefinition->WidthDesiredSize = 1280;

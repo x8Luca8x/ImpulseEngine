@@ -30,12 +30,17 @@
 *.exe
 *.out
 *.app
+*.pdb
 
 # Visual studio files
 
 *.sln
+
+bin/
+obj/
 .vs/
 
 # Impulse engine
 
 Intermediate/
+Binaries/
