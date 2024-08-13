@@ -165,6 +165,18 @@ public:
 	FORCEINLINE bool operator==(const FString& InOther) const { return Equals(InOther); }
 	FORCEINLINE bool operator!=(const FString& InOther) const { return !Equals(InOther); }
 
+	FORCEINLINE friend FString& operator+=(FString& Lhs, const FString& Rhs) { Lhs.InlineAppend(Rhs); return Lhs; }
+	FORCEINLINE friend FString operator+(const FString& Lhs, const FString& Rhs) { return Lhs.Append(Rhs); }
+
+	FORCEINLINE friend FString& operator+=(FString& Lhs, TCHAR Rhs) { Lhs.InlineAppendChar(Rhs); return Lhs; }
+	FORCEINLINE friend FString operator+(const FString& Lhs, TCHAR Rhs) { return Lhs.AppendChar(Rhs); }
+
+	FORCEINLINE friend bool operator==(const TCHAR* Lhs, const FString& Rhs) { return Rhs.Equals(Lhs); }
+	FORCEINLINE friend bool operator==(const FString& Lhs, const TCHAR* Rhs) { return Lhs.Equals(Rhs); }
+
+	FORCEINLINE friend bool operator!=(const TCHAR* Lhs, const FString& Rhs) { return !Rhs.Equals(Lhs); }
+	FORCEINLINE friend bool operator!=(const FString& Lhs, const TCHAR* Rhs) { return !Lhs.Equals(Rhs); }
+
 public:
 
 	/**

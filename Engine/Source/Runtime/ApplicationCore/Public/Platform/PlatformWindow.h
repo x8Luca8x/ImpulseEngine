@@ -2,6 +2,8 @@
 
 #include "ApplicationCoreModule.h"
 
+#include "Module/ModuleManager.h"
+
 /** Enumeration to specify different window types for windowa */
 enum class EWindowType
 {

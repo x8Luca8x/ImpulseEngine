@@ -1,7 +1,18 @@
 ﻿namespace Impulse
 {
+    public enum EModuleType
+    {
+        Executable,
+        DynamicLibrary,w
+    }
+
     public class ModuleRules
     {
+        /// <summary>
+        /// Type of module.
+        /// </summary>
+        public EModuleType ModuleType = EModuleType.DynamicLibrary;
+
         /// <summary>
         /// List of public module references.
         /// If another module references this module, this will automatically add the module to the public dependencies.
@@ -12,7 +23,7 @@
         /// List of private module references.
         ///  Every module in this list should <c>ONLY</c> be used in the <c>PRIVATE</c> implementation of this module.
         /// </summary>
-        public List<string> PrivateependencyModuleNames = new();
+        public List<string> PrivateDependencyModuleNames = new();
 
         /// <summary>
         /// List of public include paths.

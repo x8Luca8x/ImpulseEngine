@@ -4,6 +4,7 @@
 #include "Templates/ImpulseTemplates.h"
 
 #include "Platform/PlatformString.h"
+#include "Containers/ImpulseString.h"
 
 #include "ScopeLock.h"
 
@@ -96,8 +97,6 @@ public:
 
 	void Init()
 	{
-		// Convert the string
-
 		if constexpr (FCanRawCastString<Source, Target>::Value)
 			ConvertedString = reinterpret_cast<Target*>(SourceString);
 		else
@@ -171,6 +170,26 @@ template<typename Target, typename Source>
 Target* StringCast(const Source* InString)
 {
 	auto converter = TStringConverter<Source, Target>(InString);
+	Target* result = converter.Get();
+
+	FStringCastRegistry::Add(converter);
+	return result;
+}
+
+template<typename Target, typename Source>
+Target* StringCast(const Source* InString, uint32 InLength)
+{
+	auto converter = TStringConverter<Source, Target>(InString, InLength);
+	Target* result = converter.Get();
+
+	FStringCastRegistry::Add(converter);
+	return result;
+}
+
+template<typename Target>
+Target* StringCast(const FString& InString)
+{
+	auto converter = TStringConverter<TCHAR, Target>(*InString, InString.Length());
 	Target* result = converter.Get();
 
 	FStringCastRegistry::Add(converter);

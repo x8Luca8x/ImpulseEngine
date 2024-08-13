@@ -11,15 +11,18 @@ FModuleManager& FModuleManager::Get()
 	return ModuleManager;
 }
 
-FModuleHandle FModuleManager::LoadModule(const FString& ModuleName)
+IModuleInterface* FModuleManager::LoadModule(const FString& ModuleName)
 {
+	FScopeLock lock(&Lock);
+
 	FModuleHandle handle = FPlatformMisc::LoadDllHandle(*ModuleName);
-	if (handle)
+	if (handle && !Modules.Contains(handle))
 	{
 		TFunction<IModuleInterface* (*)()> GetModule = (IModuleInterface * (*)())FPlatformMisc::GetDllExport(handle, TEXT("GetModule"));
 
 		FModule& mod = Modules.Add(handle);
 
+		mod.Name = ModuleName;
 		mod.Handle = handle;
 		mod.Module = GetModule();
 
@@ -51,7 +54,18 @@ FModuleHandle FModuleManager::LoadModule(const FString& ModuleName)
 		}
 	}
 
-	return handle;
+	return GetModule(ModuleName);
+}
+
+IModuleInterface* FModuleManager::GetModule(const FString& ModuleName)
+{
+	for (auto& pair : Modules)
+	{
+		if (pair.GetValue().Name == ModuleName)
+			return pair.GetValue().Module;
+	}
+
+	return nullptr;
 }
 
 void FModuleManager::UnloadModule(FModuleHandle ModuleHandle)
@@ -65,6 +79,8 @@ void FModuleManager::UnloadModule(FModuleHandle ModuleHandle)
 		PendingRemovals.Add(ModuleHandle);
 		return;
 	}
+
+	FScopeLock lock(&Lock);
 
 	mod->Module->OnShutdown();
 	mod->Module->~IModuleInterface();
@@ -101,6 +117,8 @@ void FModuleManager::UnloadModules()
 
 void FModuleManager::FreeGarbage()
 {
+	FScopeLock lock(&Lock);
+
 	for (void* module : FreedModules)
 		FMemory::Free(module);
 

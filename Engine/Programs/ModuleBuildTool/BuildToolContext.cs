@@ -51,5 +51,14 @@ namespace ModuleBuildTool
         {
             return Path.Combine(SourceDirectory, "..", "Build");
         }
+
+        /// <summary>
+        /// Gets the output directory for the build.
+        /// </summary>
+        /// <returns></returns>
+        public string GetBuildModuleDirectory()
+        {
+            return Path.Combine(GetBuildDirectory(), "Modules");
+        }
     }
 }

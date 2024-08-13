@@ -7,10 +7,13 @@
 
 #include "Platform/PlatformMisc.h"
 
+#include "Misc/ScopeLock.h"
+
 struct FModule
 {
 	bool bInitialized = false;
 
+	FString Name;
 	FModuleHandle Handle;
 	IModuleInterface* Module = nullptr;
 };
@@ -46,7 +49,7 @@ public:
 	* @param ModuleName - Path to the module to load.
 	* @return The handle to the loaded module.
 	*/
-	FModuleHandle LoadModule(const FString& ModuleName);
+	IModuleInterface* LoadModule(const FString& ModuleName);
 
 	/**
 	* Unloads a module.
@@ -69,6 +72,26 @@ public:
 	*/
 	void FreeGarbage();
 
+public:
+
+	template<typename T>
+	T& LoadModuleChecked(const FString& ModuleName)
+	{
+		IModuleInterface* Module = LoadModule(ModuleName);
+		checkf(Module, TEXT("Failed to load module %s"), *ModuleName);
+
+		return *static_cast<T*>(Module);
+	}
+
+private:
+
+	/**
+	* Gets an already loaded module.
+	* @param ModuleName - Path to the module to get.
+	* @return The handle to the loaded module.
+	*/
+	IModuleInterface* GetModule(const FString& ModuleName);
+
 private:
 
 	/** List of module handles that requested to be unloaded while startup was in progress. */
@@ -79,4 +102,7 @@ private:
 
 	/** List of freed module interfaces that are waiting to be garbage collected. */
 	TArray<void*> FreedModules;
+
+	/** Lock to protect the module manager. */
+	FCriticalSection Lock;
 };

@@ -12,27 +12,12 @@ class ISocketSubsystem;
 typedef TSharedPtr<FSocket, ESPMode::ThreadSafe> FSocketPtr;
 typedef TSharedPtr<FAddrInfo, ESPMode::ThreadSafe> FAddrInfoPtr;
 
-enum ESockCreationFlags : int32
-{
-	None = 0,
-
-	/** Whether the socket should be saved in the socket subsystem's list of sockets. */
-	SOCK_CLOEXEC = 1 << 0
-};
-
 /**
 * Registry for all socket subsystems that are available for use.
 */
 class SOCKETS_API FSocketSubsystemRegistry
 {
-public:
-
-	/**
-	* Gets the singleton instance of the socket subsystem registry.
-	* @return The singleton instance.
-	*/
-	static FSocketSubsystemRegistry& Get();
-
+	friend class FSocketsModulePrivate;
 protected:
 
 	/** Default constructor. */
@@ -69,7 +54,24 @@ class SOCKETS_API ISocketSubsystem
 {
 public:
 
+	/**
+	* Gets the socket subsystem with the specified name.
+	* @param SubsystemName - The name of the subsystem to get. If NAME_None, the default subsystem will be returned.
+	*/
+	static ISocketSubsystem* Get(const FName SubsystemName = NAME_None);
+
 public:
+
+	/**
+	* Initializes the socket subsystem.
+	* @return true if the initialization was successful, false otherwise.
+	*/
+	virtual bool Init() = 0;
+
+	/**
+	* Shuts down the socket subsystem.
+	*/
+	virtual void Shutdown() = 0;
 
 	/**
 	* Creates a new socket.
@@ -79,7 +81,7 @@ public:
 	* @param Flags - Flags to use when creating the socket.
 	* @return The new socket.
 	*/
-	virtual FSocketPtr CreateSocket(const ESocketType SocketType, const FString& SocketDescription, const ESocketFamily ProtocolType, ESockCreationFlags Flags = SOCK_CLOEXEC) = 0;
+	virtual FSocketPtr CreateSocket(const ESocketType SocketType, const FString& SocketDescription, const ESocketFamily ProtocolType) = 0;
 
 	/**
 	* Resolves an address

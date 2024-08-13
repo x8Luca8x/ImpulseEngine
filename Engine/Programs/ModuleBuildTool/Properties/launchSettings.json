@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ModuleBuildTool": {
+      "commandName": "Project",
+      "commandLineArgs": "-s C:\\Users\\lucaf\\source\\repos\\ImpulseEngine\\Engine\\Source"
+    }
+  }
+}

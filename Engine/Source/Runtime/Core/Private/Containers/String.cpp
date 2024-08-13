@@ -46,7 +46,10 @@ int32 FString::Size() const
 
 FString FString::Left(int32 InIndex) const
 {
-	checkf(InIndex > 0 && InIndex < m_Length, TEXT("Invalid index."));
+	checkf(InIndex >= 0 && InIndex < m_Length, TEXT("Invalid index."));
+
+	if (InIndex == 0)
+		return FString();
 
 	// Prepare result
 

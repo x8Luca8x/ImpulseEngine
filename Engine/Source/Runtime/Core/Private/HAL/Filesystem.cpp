@@ -45,7 +45,7 @@ bool FFilesystem::ReadBytes(FFileHandle Handle, TArray<uint8>& OutData, const FR
 bool FFileHelper::CreateFilePath(const FString& Filename)
 {
 	TArray<FString> directories;
-	FPaths::Split(Filename, directories);
+	FPaths::Split(Filename, directories, true);
 
 	for (int32 i = 0; i < directories.Num() - 1; ++i)
 		FFilesystem::CreateDirectory(directories[i]);

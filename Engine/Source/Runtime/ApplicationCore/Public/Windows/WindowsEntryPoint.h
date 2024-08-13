@@ -21,9 +21,17 @@
 * @param lpCmdLine - The command line arguments
 * @param nShowCmd - The show command
 */
+#if defined(CONSOLE_APP)
+int main()
+#else
 int ENTRYPOINT_WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
+#endif
 {
+#if defined(CONSOLE_APP)
+	FCommandLine::Init(GetCommandLineW());
+#else
 	FCommandLine::Init(lpCmdLine);
+#endif
 	FApp::Init();
 
 	FWindowsPlatformMisc::CoInitialize(GEnvironment.IsSingleThreaded());

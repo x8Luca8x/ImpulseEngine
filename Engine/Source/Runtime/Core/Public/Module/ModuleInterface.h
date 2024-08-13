@@ -4,8 +4,8 @@
 
 #include "Platform/PlatformMisc.h"
 
-#define IMPLEMENT_MODULE(API, ModuleInterface) \
-	extern "C" ##API STDCALL IModuleInterface* GetModule() \
+#define IMPLEMENT_MODULE(ModuleInterface) \
+	extern "C" DLLEXPORT IModuleInterface* STDCALL GetModule() \
 	{ \
 		return new ModuleInterface(); \
 	}

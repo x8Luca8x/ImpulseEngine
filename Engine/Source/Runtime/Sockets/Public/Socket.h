@@ -10,6 +10,9 @@ class SOCKETS_API FSocket
 {
 public:
 
+	FSocket(const FString& Description)
+		: m_Description(Description) {}
+
 	/**
 	* Close the socket.
 	*/
@@ -18,4 +21,9 @@ public:
 	/**
 	* Get the socket type.
 	*/
+
+protected:
+
+	/** Description of the socket. */
+	FString m_Description;
 };

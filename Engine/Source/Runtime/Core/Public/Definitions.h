@@ -105,6 +105,10 @@ typedef decltype(nullptr) TYPE_OF_NULLPTR;
 #define DLLEXPORT
 #endif
 
+#ifndef IE_PACKAGED_BUILD
+#define IE_PACKAGED_BUILD 0
+#endif
+
 #ifndef ENCRYPT_ARCHIVE_STRING
 
 #if IE_DISABLE_STRING_ENCRYPTION

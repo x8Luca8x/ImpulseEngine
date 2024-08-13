@@ -1,0 +1,9 @@
+<Module>
+  <ModuleType>DynamicLibrary</ModuleType>
+  <PublicDependencyModuleNames>
+    <Item>Test</Item>
+  </PublicDependencyModuleNames>
+  <PrivateDependencyModuleNames />
+  <PublicIncludePaths />
+  <PrivateIncludePaths />
+</Module>

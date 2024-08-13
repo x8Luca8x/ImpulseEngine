@@ -1,3 +1,5 @@
+#define CONSOLE_APP 1
+
 #include "CoreMinimal.h"
 
 #include "HAL/Filesystem.h"
@@ -8,6 +10,13 @@
 
 #include "Platform/PlatformEntryPoint.h"
 
+#include "Module/ModuleManager.h"
+#include "SocketsModule.h"
+
+#include "Misc/Paths.h"
+
+#include <iostream>
+
 class FEditorApplication : public IApplication
 {
 	DEFAULT_APP_BODY(FEditorApplication);
@@ -16,7 +25,9 @@ public:
 
 	virtual void Run() override
 	{
-		FWindowPtr window = MakeWindow();
+		FSocketsModule& socketsModule = FSocketsModule::Get();
+
+		/*FWindowPtr window = MakeWindow();
 		FWindowDefinitionPtr windowDefinition = MakeWindowDefinition();
 
 		windowDefinition->bIsRegularWindow = true;
@@ -37,7 +48,10 @@ public:
 				TranslateMessage(&message);
 				DispatchMessage(&message);
 			}
-		}
+		}*/
+
+
+		FModuleManager::Get().UnloadModule(&socketsModule);
 	}
 };
 

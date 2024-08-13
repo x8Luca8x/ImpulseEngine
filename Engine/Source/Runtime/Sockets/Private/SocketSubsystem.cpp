@@ -1,10 +1,6 @@
 #include "SocketSubsystem.h"
 
-FSocketSubsystemRegistry& FSocketSubsystemRegistry::Get()
-{
-	static FSocketSubsystemRegistry Singleton;
-	return Singleton;
-}
+#include "SocketsModule.h"
 
 FSocketSubsystemRegistry::FSocketSubsystemRegistry()
 {
@@ -18,4 +14,9 @@ void FSocketSubsystemRegistry::RegisterSocketSubsystem(const FName SubsystemName
 void FSocketSubsystemRegistry::UnregisterSocketSubsystem(const FName SubsystemName)
 {
 	SocketSubsystems.Remove(SubsystemName);
+}
+
+ISocketSubsystem* ISocketSubsystem::Get(const FName SubsystemName)
+{
+	return FSocketsModule::Get().GetSocketSubsystem(SubsystemName);
 }
