@@ -145,6 +145,9 @@ public:
 	template<typename Source, typename Target>
 	static void Add(TStringConverter<Source, Target>& InConverter)
 	{
+		if (FCanRawCastString<Source, Target>::Value)
+			return; // No need to save the conversion
+
 		Add(InConverter.Get());
 		InConverter.Detach(); // Detach so the string is not freed when the converter is destroyed
 	}

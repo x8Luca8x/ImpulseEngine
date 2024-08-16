@@ -106,6 +106,9 @@
 #pragma push_macro("GetObject")
 #undef GetObject
 
+#pragma push_macro("SetPort")
+#undef SetPort
+
 #pragma pop_macro("TEXT")
 
 namespace Windows

@@ -19,6 +19,39 @@
 #pragma push_macro("CreateFile")
 #undef CreateFile
 
+#include <ShlObj.h>
+
+int32 SpecialDirectoryToCSIDL(ESpecialDirectory Directory)
+{
+	switch (Directory)
+	{
+	case ESpecialDirectory::Documents:
+		return CSIDL_MYDOCUMENTS;
+	case ESpecialDirectory::Programs:
+		return CSIDL_PROGRAM_FILES;
+	case ESpecialDirectory::ProgramsX86:
+		return CSIDL_PROGRAM_FILESX86;
+	case ESpecialDirectory::ProgramData:
+		return CSIDL_COMMON_APPDATA;
+	case ESpecialDirectory::Desktop:
+		return CSIDL_DESKTOP;
+	case ESpecialDirectory::Downloads:
+		return CSIDL_PERSONAL;
+	case ESpecialDirectory::Music:
+		return CSIDL_MYMUSIC;
+	case ESpecialDirectory::Pictures:
+		return CSIDL_MYPICTURES;
+	case ESpecialDirectory::Videos:
+		return CSIDL_MYVIDEO;
+	case ESpecialDirectory::User:
+		return CSIDL_PROFILE;
+	case ESpecialDirectory::AppData:
+		return CSIDL_APPDATA;
+	}
+
+	return -1;
+}
+
 bool FWindowsFilesystem::IsFileValid(FFileHandle Handle)
 {
 	return Handle != NULL && Handle != INVALID_HANDLE_VALUE;
@@ -85,6 +118,19 @@ bool FWindowsFilesystem::ReadData(FFileHandle Handle, void* Data, uint64 Size, c
 	const bool bSuccess = ReadFile(Handle, Data, static_cast<DWORD>(Size), &bytesRead, &overlapped);
 
 	return bSuccess && bytesRead == Size;
+}
+
+FString FWindowsFilesystem::GetSpecialDirectory(ESpecialDirectory Directory)
+{
+	const int32 csidl = SpecialDirectoryToCSIDL(Directory);
+	if (csidl == -1)
+		return FString();
+
+	TCHAR path[MAX_PATH];
+	if (SHGetFolderPath(NULL, csidl, NULL, SHGFP_TYPE_CURRENT, path) != S_OK)
+		return FString();
+
+	return path;
 }
 
 uint64 FWindowsFilesystem::GetFileSize(FFileHandle Handle)

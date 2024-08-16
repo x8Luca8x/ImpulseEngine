@@ -6,6 +6,8 @@
 
 #define WINAPI __stdcall
 
+#define PLATFORM_LITTLE_ENDIAN 1
+
 class CORE_API FWindowsPlatform
 {
 public:

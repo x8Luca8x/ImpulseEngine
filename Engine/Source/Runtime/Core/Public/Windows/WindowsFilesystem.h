@@ -74,6 +74,13 @@ public:
 	// @param Size - Number of bytes to read
 	// @return true if the data was read successfully, false otherwise
 	static bool ReadData(FFileHandle Handle, void* Data, uint64 Size, const FGenericReadFileOptions& Options = FGenericReadFileOptions());
+
+	/**
+	* Gets the path to a special directory
+	* @param Directory - Special directory to get the path to
+	* @return Path to the special directory
+	*/
+	static FString GetSpecialDirectory(ESpecialDirectory Directory);
 };
 
 typedef FWindowsFilesystem FPlatformFilesystem;

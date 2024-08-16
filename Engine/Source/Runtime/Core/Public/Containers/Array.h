@@ -235,6 +235,18 @@ public:
 	T& operator[](int32 Index) { CheckRange(Index); return m_Allocator.GetAllocation()[Index]; }
 	const T& operator[](int32 Index) const { CheckRange(Index); return m_Allocator.GetAllocation()[Index]; }
 
+	bool operator==(const TArray& Other) const
+	{
+		if (m_Num != Other.m_Num)
+			return false;
+
+		for (int32 i = 0; i < m_Num; ++i)
+			if (m_Allocator.GetAllocation()[i] != Other.m_Allocator.GetAllocation()[i])
+				return false;
+
+		return true;
+	}
+
 	// @return An iterator to the first element in the array.
 	TArrayIterator<T> begin() { return TArrayIterator<T>(m_Allocator.GetAllocation()); }
 

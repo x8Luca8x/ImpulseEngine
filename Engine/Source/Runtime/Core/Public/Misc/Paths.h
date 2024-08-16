@@ -96,6 +96,24 @@ public:
 	static FString GamePluginsDir();
 
 	/**
+	* Gets the user directory for the game.
+	* @return User directory for the game.
+	*/
+	static FString GameUserDir();
+
+	/**
+	* Gets the saved directory for the game.
+	* @return Saved directory for the game.
+	*/
+	static FString GameSavedDir();
+
+	/**
+	* Gets the logs directory for the game.
+	* @return Logs directory for the game.
+	*/
+	static FString GameLogDir();
+
+	/**
 	* Combines multiple paths into a single path.
 	* @param InPaths - Paths to combine.
 	* @return Combined path.

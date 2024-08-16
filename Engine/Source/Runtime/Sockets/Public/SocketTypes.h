@@ -2,16 +2,15 @@
 
 #include "SocketsModule.h"
 
-enum class ESocketType : uint8
+enum ESocketType : uint8
 {
-	Invalid,
-	Stream,
-	Datagram,
+	SOCK_Unknown,
+	SOCK_Stream,
+	SOCK_Datagram,
 };
 
-enum class ESocketFamily : uint8
+namespace NetworkProtocolTypes
 {
-	Invalid,
-	IPv4,
-	IPv6,
-};
+	extern SOCKETS_API const FName IPv4;
+	extern SOCKETS_API const FName IPv6;
+}

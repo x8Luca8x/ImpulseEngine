@@ -2,6 +2,10 @@
 
 #include <Windows/WindowsAPI.h>
 
+#include "HAL/Filesystem.h"
+
+#include "Misc/Statics.h"
+
 const TCHAR FPaths::DefaultDirectorySeparator = TEXT('\\');
 const FString FPaths::DirectorySeparatorChars = TEXT("\\/");
 
@@ -157,8 +161,8 @@ FString FPaths::EngineDir()
 
 FString FPaths::GameDir()
 {
-#if IE_PACKAGED_BUILD
-	return Combine(GameRootDir(), TEXT("Game"));
+#if !IE_PACKAGED_BUILD
+	return Combine(GameRootDir(), FAppStatics::GetProjectName());
 #else
 	return GameRootDir();
 #endif
@@ -184,6 +188,20 @@ FString FPaths::EnginePluginsDir()
 FString FPaths::GamePluginsDir()
 {
 	return Combine(GameDir(), TEXT("Plugins"));
+}
+
+FString FPaths::GameUserDir()
+{
+	
+}
+
+FString FPaths::GameSavedDir()
+{
+}
+
+FString FPaths::GameLogDir()
+{
+	return FString();
 }
 
 FString FPaths::Combine(const TArray<FString>& InPaths)

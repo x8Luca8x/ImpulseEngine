@@ -21,6 +21,21 @@ enum EFileAccess : int32
 	FILE_Truncate = 0x00000008,
 };
 
+enum class ESpecialDirectory : uint8
+{
+	Documents,
+	Programs,
+	ProgramsX86,
+	ProgramData,
+	Desktop,
+	Downloads,
+	Music,
+	Pictures,
+	Videos,
+	User,
+	AppData,
+};
+
 struct FGenericReadFileOptions
 {
 	uint64 Offset = 0;

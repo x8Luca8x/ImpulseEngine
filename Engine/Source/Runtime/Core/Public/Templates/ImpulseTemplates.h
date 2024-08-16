@@ -177,3 +177,55 @@ FORCEINLINE T ImplicitConv(typename TIdentity<T>::Type Obj)
 {
 	return Obj;
 }
+
+/** Test if value can make a lossless static_cast roundtrip via OutType without a sign change */
+template<typename OutType, typename InType>
+constexpr bool IntFitsIn(InType In)
+{
+	static_assert(std::is_integral_v<InType> && std::is_integral_v<OutType>, "Only integers supported");
+
+	OutType Out = static_cast<OutType>(In);
+	bool bRoundtrips = In == static_cast<InType>(Out);
+
+	// Signed <-> unsigned cast requires sign test, signed -> smaller signed is covered by roundtrip sign-extension.
+	if constexpr ((static_cast<InType>(-1) < InType{}) != (static_cast<OutType>(-1) < OutType{}))
+	{
+		return bRoundtrips && (In < InType{} == Out < OutType{});
+	}
+	else
+	{
+		return bRoundtrips;
+	}
+}
+
+/** Cast and check that value fits in OutType */
+template<typename OutType, typename InType>
+OutType IntCastChecked(InType In)
+{
+	if constexpr (std::is_signed_v<InType>)
+	{
+		checkf(IntFitsIn<OutType>(In), TEXT("Loss of data caused by narrowing conversion, In = %" INT64_FMT), (int64)In);
+	}
+	else
+	{
+		checkf(IntFitsIn<OutType>(In), TEXT("Loss of data caused by narrowing conversion, In = %" UINT64_FMT), (uint64)In);
+	}
+	return static_cast<OutType>(In);
+}
+
+/** Test if value can make a static_cast roundtrip via OutType whilst maintaining precision */
+template<typename OutType, typename InType>
+constexpr bool FloatFitsIn(InType In, InType Precision)
+{
+	static_assert(std::is_floating_point_v<InType> && std::is_floating_point_v<OutType>, "Only floating point supported");
+
+	OutType Out = static_cast<OutType>(In);
+	return fabs(static_cast<InType>(Out) - In) <= Precision;
+}
+
+template<typename OutType, typename InType>
+OutType FloatCastChecked(InType In, InType Precision)
+{
+	checkf(FloatFitsIn<OutType>(In, Precision), TEXT("Loss of data caused by narrowing conversion"));
+	return static_cast<OutType>(In);
+}

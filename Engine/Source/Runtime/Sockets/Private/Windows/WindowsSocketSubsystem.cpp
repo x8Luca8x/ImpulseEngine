@@ -2,9 +2,6 @@
 
 #if PLATFORM_WINDOWS
 
-//#include "WinSock2.h"
-#pragma comment(lib, "Ws2_32.lib")
-
 FName NAME_WindowsSocketSubsystem = FName(TEXT("Windows"));
 
 FWindowsSocketSubsystem* FWindowsSocketSubsystem::Create()
